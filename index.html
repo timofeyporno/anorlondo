@@ -1,140 +1,470 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>anorlondo</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@700&display=swap">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: white;
+        :root {
+            --primary: #10B981; /* Зелёный вместо фиолетового */
+            --primary-dark: #059669; /* Тёмно-зелёный */
+            --dark: #0F172A; /* Очень тёмный синий */
+            --darker: #020617; /* Почти чёрный */
+            --light: #F8FAFC; /* Светлый фон текста */
+            --gray: #94A3B8; /* Серый */
+            --accent: #22D3EE; /* Бирюзовый акцент */
+            --glow: rgba(16, 185, 129, 0.3); /* Зелёное свечение */
+        }
+        
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
-        .header-container {
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Анимированные элементы фона */
+        .bg-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .bg-element {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.2;
+        }
+        
+        .element-1 {
+            width: 800px;
+            height: 800px;
+            background: var(--primary);
+            top: -300px;
+            left: -300px;
+            animation: float 15s ease-in-out infinite;
+        }
+        
+        .element-2 {
+            width: 600px;
+            height: 600px;
+            background: var(--accent);
+            bottom: -200px;
+            right: -200px;
+            animation: float 12s ease-in-out infinite reverse;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(50px, 80px) rotate(5deg); }
+            50% { transform: translate(100px, 30px) rotate(0deg); }
+            75% { transform: translate(30px, 70px) rotate(-5deg); }
+        }
+        
+        /* Хедер */
+        header {
+            padding: 80px 0 60px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px var(--glow);
+            animation: glow-pulse 4s ease-in-out infinite;
+        }
+        
+        @keyframes glow-pulse {
+            0%, 100% { text-shadow: 0 0 20px var(--glow); }
+            50% { text-shadow: 0 0 40px var(--glow); }
+        }
+        
+        .tagline {
+            font-size: 1.3rem;
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto 40px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tagline::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 3px;
+        }
+        
+        /* Телеграм кнопки */
+        .social-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 60px;
+        }
+        
+        .social-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border-radius: 50px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .social-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: 0.5s;
+        }
+        
+        .social-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .social-btn:hover::before {
+            left: 100%;
+        }
+        
+        .social-btn img {
+            width: 22px;
+            height: 22px;
+        }
+        
+        /* Ресурс паки */
+        .packs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-bottom: 100px;
+        }
+        
+        .pack {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 35px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .pack:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+        }
+        
+        .pack::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+        
+        .pack-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 20px;
-            background: white;
+            margin-bottom: 25px;
         }
-        .header {
-            font-size: 36px;
-            font-weight: bold;
-            text-align: center;
-            flex-grow: 1; /* Это позволит заголовку занять все доступное пространство */
+        
+        .pack-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--primary), var(--light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
-        .top-menu {
+        
+        .pack-version {
+            background: var(--darker);
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--accent);
+            border: 1px solid rgba(34, 211, 238, 0.3);
+        }
+        
+        .pack-description {
+            color: var(--gray);
+            margin-bottom: 30px;
+            font-size: 1.05rem;
+            line-height: 1.8;
+        }
+        
+        .pack-footer {
             display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
             gap: 10px;
-            align-items: center; /* Выравнивание по центру */
-        }
-        .top-menu a {
+            padding: 15px 30px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            color: var(--darker);
+            border-radius: 10px;
             text-decoration: none;
-            color: black;
-            font-weight: bold;
-            padding: 5px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
         }
-
-        .top-menu img {
-            width: 50px; /* Уменьшенные кнопки */
-            height: 50px;
-        }
-
-        .telegram-buttons {
-            display: flex;
-            gap: 5px;
-        }
-        .telegram-buttons img {
-            width: 50px; /* Уменьшенные кнопки */
-            height: 50px;
-        }
-        .container {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            flex-wrap: wrap;
-            padding: 20px;
-        }
-        .card {
-            width: 250px;
-            text-align: center;
-        }
-        .card img {
-            width: 100%;
-            height: auto;
-        }
-        .download-button {
-            background-color: green;
+        
+        .download-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
             color: white;
-            padding: 10px 15px;
-            text-decoration: none;
-            border-radius: 5px;
-            display: inline-block;
-            margin-top: 10px;
         }
-        .footer {
-            background: black;
-            color: white;
-            padding: 10px;
-            font-size: 12px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
+        
+        .download-btn img {
+            width: 18px;
+            height: 18px;
+            filter: brightness(0) invert(1);
+        }
+        
+        .pack-stats {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            color: var(--gray);
+        }
+        
+        .stat img {
+            width: 16px;
+            height: 16px;
+            opacity: 0.8;
+        }
+        
+        /* Футер */
+        footer {
             text-align: center;
+            padding: 60px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--gray);
+            font-size: 1rem;
+            position: relative;
+        }
+        
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        }
+        
+        /* Анимации */
+        @keyframes float-rotate {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(50px, 80px) rotate(5deg); }
+            50% { transform: translate(100px, 30px) rotate(0deg); }
+            75% { transform: translate(30px, 70px) rotate(-5deg); }
+        }
+        
+        /* Адаптив */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 3.5rem;
+            }
+            
+            .packs-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .social-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            
+            .pack {
+                padding: 25px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="header-container">
-        <div class="telegram-buttons">
-            <a href="https://t.me/+wRSRv9SRegs2NWJi" target="_blank">
-                <img src="img/tg_anorlondo.jpg" alt="Telegram">
-            </a>
-            <a href="https://t.me/+soq0CY-FBFxkNzBi" target="_blank">
-                <img src="img/tg_capital.jpg" alt="Telegram">
-            </a>
-            <a href="https://t.me/+k52fhZ4pZfJjMjUy" target="_blank">
-                <img src="img/tg_antegria.jpg" alt="Telegram">
-            </a>
-        </div>
-
-        <div class="header">............anorlondo!!!</div>
-
-        <div class="top-menu">
-            <a href="information.html">Information</a>
-            <a href="packs/anorface!!!.zip" target="_blank">
-                <img src="img/airplane.png">
-            </a>
-            <a href="https://soundcloud.com/anorjabri">Soundcloud</a>
-        </div>
+    <!-- Анимированные элементы фона -->
+    <div class="bg-elements">
+        <div class="bg-element element-1"></div>
+        <div class="bg-element element-2"></div>
     </div>
-
+    
     <div class="container">
-        <div class="card">
-            <img src="img/texture1.jpg" alt="anorlondo">
-            <h3>anorlondo</h3>
-            <p>РП КШЛБ с декорациями одеждой и оружиями.</p>
-            <a href="packs/anorlondo.zip" class="download-button">download!</a>
+        <header>
+            <h1 class="logo">anorlondo</h1>
+            <p class="tagline">CSLB!</p>
+            
+            <div class="social-buttons">
+                <a href="https://t.me/+wRSRv9SRegs2NWJi" class="social-btn" target="_blank">
+                    <img src="img/tg_anorlondo.jpg" alt="Telegram">
+                    <span>anorlondo</span>
+                </a>
+                <a href="https://t.me/+soq0CY-FBFxkNzBi" class="social-btn" target="_blank">
+                    <img src="img/tg_capital.jpg" alt="Telegram">
+                    <span>tpc</span>
+                </a>
+                <a href="https://t.me/+k52fhZ4pZfJjMjUy" class="social-btn" target="_blank">
+                    <img src="img/tg_antegria.jpg" alt="Telegram">
+                    <span>antegriamoment
+                </a>
+            </div>
+        </header>
+        
+        <div class="packs-grid">
+            <!-- Pack 1 -->
+            <div class="pack">
+                <div class="pack-header">
+                    <h2 class="pack-title">anorlondo</h2>
+                    <span class="pack-version">v2.4.2</span>
+                </div>
+                <p class="pack-description">
+                    РП КШЛБ с декорациями,одеждой и оружиями.                          
+                </p>
+                <div class="pack-footer">
+                    <a href="packs/anorlondo.zip" class="download-btn">
+                        <img src="https://www.svgrepo.com/show/485545/download-cloud-2.svg" alt="Download">
+                        download!
+                    </a>
+                    <div class="pack-stats">
+                        <div class="stat">
+                            <img src="https://www.svgrepo.com/show/530363/download.svg" alt="Downloads">
+                            24.7K
+                        </div>
+                        <div class="stat">
+                            <img src="https://www.svgrepo.com/show/532575/star.svg" alt="Rating">
+                            4.9
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pack 2 -->
+            <div class="pack">
+                <div class="pack-header">
+                    <h2 class="pack-title">CosmicPack</h2>
+                    <span class="pack-version">v3.1.5</span>
+                </div>
+                <p class="pack-description">
+                Ресурспак сервера (DLC вместе).
+                </p>
+                <div class="pack-footer">
+                    <a href="packs/cosmicpack.zip" class="download-btn">
+                        <img src="https://www.svgrepo.com/show/485545/download-cloud-2.svg" alt="Download">
+                        ckaчatь!
+                    </a>
+                    <div class="pack-stats">
+                        <div class="stat">
+                            <img src="https://www.svgrepo.com/show/530363/download.svg" alt="Downloads">
+                            31.2K
+                        </div>
+                        <div class="stat">
+                            <img src="https://www.svgrepo.com/show/532575/star.svg" alt="Rating">
+                            4.8
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pack 3 -->
+            <div class="pack">
+                <div class="pack-header">
+                    <h2 class="pack-title">anorface</h2>
+                    <span class="pack-version">v1.5.0</span>
+                </div>
+                <p class="pack-description">
+                     лицо анора на всех мобах
+                </p>
+                <div class="pack-footer">
+                    <a href="packs/anorface!!!.zip" class="download-btn">
+                        <img src="img/airplane.png" alt="Download">
+                        Скачать!
+                    </a>
+                    <div class="pack-stats">
+                        <div class="stat">
+                            <img src="https://www.svgrepo.com/show/530363/download.svg" alt="Downloads">
+                            19.8K
+                        </div>
+                        <div class="stat">
+                            <img src="https://www.svgrepo.com/show/532575/star.svg" alt="Rating">
+                            5.0
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="card">
-            <img src="img/texture2.jpg" alt="CosmicPack">
-            <h3>CosmicPack</h3>
-            <p>Ресурспак сервера (DLC вместе).</p>
-            <a href="packs/cosmicpack.zip" class="download-button">download!</a>
-        </div>
-        <div class="card">
-            <img src="img/texture3.jpg" alt="Столица">
-            <h3>Столица</h3>
-            <p>тимкей.</p>
-            <a href="#" class="download-button">download!</a>
-        </div>
-    </div>
-
-    <div class="footer">
-        ©anorlondo 2025 tg:anorjabri <br>
-        Мы собираем и обрабатываем персональные данные в соответствии с правилами сервера. Все данные используются только для улучшения качества обслуживания и не передаются огану с меломаном.
+        
+        <footer>
+            <p>© 2025 anorlondo. Все права защищены oganamи.</p>
+            <p>Не аффилировано с Capital or Антегрия</p>
+        </footer>
     </div>
 </body>
 </html>
