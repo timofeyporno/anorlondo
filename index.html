@@ -1,22 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>anorlondo</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@700&display=swap">
+    <title>anorlodno</title>
     <style>
-        :root {
-            --primary: #10B981; /* Зелёный вместо фиолетового */
-            --primary-dark: #059669; /* Тёмно-зелёный */
-            --dark: #0F172A; /* Очень тёмный синий */
-            --darker: #020617; /* Почти чёрный */
-            --light: #F8FAFC; /* Светлый фон текста */
-            --gray: #94A3B8; /* Серый */
-            --accent: #22D3EE; /* Бирюзовый акцент */
-            --glow: rgba(16, 185, 129, 0.3); /* Зелёное свечение */
-        }
-        
         * {
             margin: 0;
             padding: 0;
@@ -24,447 +12,555 @@
         }
         
         body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--dark);
-            color: var(--light);
-            line-height: 1.7;
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #d4d4d4;
+            line-height: 1.4;
+            min-height: 100vh;
             overflow-x: hidden;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 40px 20px;
+            position: relative;
         }
         
-        /* Анимированные элементы фона */
-        .bg-elements {
+        /* Минималистичные гранж-текстуры */
+        .texture-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            pointer-events: none;
             z-index: -1;
+            opacity: 0.02;
+            background-image: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 1px,
+                    rgba(255,255,255,0.05) 1px,
+                    rgba(255,255,255,0.05) 2px
+                );
+        }
+        
+        /* Telegram кнопки в правом верхнем углу */
+        .tg-buttons {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 8px;
+            z-index: 100;
+        }
+        
+        .tg-button {
+            width: 40px;
+            height: 40px;
+            background: rgba(30, 30, 30, 0.8);
+            border: 1px solid #333;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
             overflow: hidden;
+            text-decoration: none;
         }
         
-        .bg-element {
+        .tg-button:hover {
+            background: rgba(40, 40, 40, 0.9);
+            border-color: #555;
+            transform: translateY(-1px);
+        }
+        
+        .tg-button img {
+            width: 20px;
+            height: 20px;
+            filter: grayscale(100%) brightness(0.8);
+            transition: all 0.3s ease;
+            object-fit: cover;
+        }
+        
+        .tg-button:hover img {
+            filter: grayscale(50%) brightness(1.1);
+        }
+        
+        .tooltip {
             position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.2;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: rgba(20, 20, 20, 0.95);
+            border: 1px solid #333;
+            padding: 6px 12px;
+            font-size: 12px;
+            color: #aaa;
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 101;
         }
         
-        .element-1 {
-            width: 800px;
-            height: 800px;
-            background: var(--primary);
-            top: -300px;
-            left: -300px;
-            animation: float 15s ease-in-out infinite;
+        .tg-button:hover .tooltip {
+            opacity: 1;
+            transform: translateY(0);
         }
         
-        .element-2 {
-            width: 600px;
-            height: 600px;
-            background: var(--accent);
-            bottom: -200px;
-            right: -200px;
-            animation: float 12s ease-in-out infinite reverse;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(50px, 80px) rotate(5deg); }
-            50% { transform: translate(100px, 30px) rotate(0deg); }
-            75% { transform: translate(30px, 70px) rotate(-5deg); }
-        }
-        
-        /* Хедер */
+        /* Заголовок */
         header {
-            padding: 80px 0 60px;
-            text-align: center;
+            margin-bottom: 60px;
             position: relative;
         }
         
-        .logo {
-            font-family: 'Playfair Display', serif;
-            font-size: 5rem;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 20px;
+        .site-title {
+            font-size: 48px;
+            font-weight: normal;
             letter-spacing: 2px;
-            text-shadow: 0 0 20px var(--glow);
-            animation: glow-pulse 4s ease-in-out infinite;
-        }
-        
-        @keyframes glow-pulse {
-            0%, 100% { text-shadow: 0 0 20px var(--glow); }
-            50% { text-shadow: 0 0 40px var(--glow); }
-        }
-        
-        .tagline {
-            font-size: 1.3rem;
-            color: var(--gray);
-            max-width: 700px;
-            margin: 0 auto 40px;
+            margin-bottom: 8px;
+            color: #fff;
             position: relative;
             display: inline-block;
         }
         
-        .tagline::after {
+        .site-title::after {
             content: '';
             position: absolute;
-            bottom: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            border-radius: 3px;
-        }
-        
-        /* Телеграм кнопки */
-        .social-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            margin-bottom: 60px;
-        }
-        
-        .social-btn {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 15px 25px;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(15px);
-            border-radius: 50px;
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .social-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: 0.5s;
-        }
-        
-        .social-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-        }
-        
-        .social-btn:hover::before {
-            left: 100%;
-        }
-        
-        .social-btn img {
-            width: 22px;
-            height: 22px;
-        }
-        
-        /* Ресурс паки */
-        .packs-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 40px;
-            margin-bottom: 100px;
-        }
-        
-        .pack {
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
-            padding: 35px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-        
-        .pack:hover {
-            transform: translateY(-15px) scale(1.02);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
-        }
-        
-        .pack::before {
-            content: '';
-            position: absolute;
-            top: 0;
+            bottom: -4px;
             left: 0;
             width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
+            height: 1px;
+            background: #444;
         }
         
-        .pack-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
+        .site-subtitle {
+            font-size: 14px;
+            color: #777;
+            letter-spacing: 1px;
         }
         
-        .pack-title {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, var(--primary), var(--light));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+        /* Секции */
+        .section {
+            margin-bottom: 50px;
         }
         
-        .pack-version {
-            background: var(--darker);
-            padding: 5px 15px;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: var(--accent);
-            border: 1px solid rgba(34, 211, 238, 0.3);
+        .section-title {
+            font-size: 18px;
+            color: #aaa;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            display: inline-block;
         }
         
-        .pack-description {
-            color: var(--gray);
-            margin-bottom: 30px;
-            font-size: 1.05rem;
-            line-height: 1.8;
+        .section-title::before {
+            content: '[';
+            margin-right: 8px;
+            color: #666;
         }
         
-        .pack-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .section-title::after {
+            content: ']';
+            margin-left: 8px;
+            color: #666;
         }
         
-        .download-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 15px 30px;
-            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-            color: var(--darker);
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: 700;
+        /* Файлы */
+        .files-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+        
+        .file-item {
+            background: rgba(30, 30, 30, 0.5);
+            border: 1px solid #333;
+            padding: 20px;
+            position: relative;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
         }
         
-        .download-btn:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
-            color: white;
+        .file-item:hover {
+            border-color: #666;
+            background: rgba(40, 40, 40, 0.7);
         }
         
-        .download-btn img {
-            width: 18px;
-            height: 18px;
-            filter: brightness(0) invert(1);
+        .file-name {
+            font-size: 18px;
+            color: #fff;
+            margin-bottom: 8px;
+            display: block;
         }
         
-        .pack-stats {
-            display: flex;
-            gap: 20px;
+        .file-description {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 16px;
+            line-height: 1.5;
         }
         
-        .stat {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.95rem;
-            color: var(--gray);
+        .file-size {
+            font-size: 12px;
+            color: #666;
+            position: absolute;
+            top: 20px;
+            right: 20px;
         }
         
-        .stat img {
-            width: 16px;
-            height: 16px;
-            opacity: 0.8;
+        .download-link {
+            display: inline-block;
+            font-size: 14px;
+            color: #aaa;
+            text-decoration: none;
+            border-bottom: 1px solid #444;
+            padding-bottom: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .download-link:hover {
+            color: #fff;
+            border-bottom-color: #fff;
         }
         
         /* Футер */
         footer {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid #222;
             text-align: center;
-            padding: 60px 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            color: var(--gray);
-            font-size: 1rem;
-            position: relative;
         }
         
-        footer::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        .footer-text {
+            font-size: 12px;
+            color: #555;
+            letter-spacing: 1px;
+        }
+        
+        /* Эффекты потёртости */
+        .grunge-line {
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(100, 100, 100, 0.3) 50%, 
+                transparent 100%);
+            margin: 30px 0;
         }
         
         /* Анимации */
-        @keyframes float-rotate {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(50px, 80px) rotate(5deg); }
-            50% { transform: translate(100px, 30px) rotate(0deg); }
-            75% { transform: translate(30px, 70px) rotate(-5deg); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
-        /* Адаптив */
-        @media (max-width: 768px) {
-            .logo {
-                font-size: 3.5rem;
+        .fade-in {
+            animation: fadeIn 0.8s ease forwards;
+            opacity: 0;
+        }
+        
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        
+        /* Уведомления */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(20, 20, 20, 0.95);
+            border: 1px solid #333;
+            padding: 12px 20px;
+            font-size: 13px;
+            color: #aaa;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Мобильная адаптация */
+        @media (max-width: 640px) {
+            .container {
+                padding: 60px 16px 30px;
             }
             
-            .packs-grid {
-                grid-template-columns: 1fr;
-                gap: 30px;
+            .tg-buttons {
+                top: 10px;
+                right: 10px;
+                gap: 6px;
             }
             
-            .social-buttons {
-                flex-direction: column;
-                align-items: center;
-                gap: 15px;
+            .tg-button {
+                width: 36px;
+                height: 36px;
             }
             
-            .pack {
-                padding: 25px;
+            .tg-button img {
+                width: 18px;
+                height: 18px;
+            }
+            
+            .site-title {
+                font-size: 36px;
+            }
+            
+            .file-size {
+                position: static;
+                display: block;
+                margin-top: 8px;
+            }
+        }
+        
+        /* Случайные дефекты */
+        .glitch {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0;
+            animation: glitchEffect 20s infinite;
+        }
+        
+        @keyframes glitchEffect {
+            0%, 100% { opacity: 0; }
+            1%, 2% { opacity: 0.03; }
+            3%, 4% { opacity: 0; }
+            48%, 49% { opacity: 0.02; }
+            50%, 51% { opacity: 0; }
+            98%, 99% { opacity: 0.01; }
+        }
+        
+        /* Кнопка меню для мобильных (альтернатива) */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(30, 30, 30, 0.8);
+            border: 1px solid #333;
+            border-radius: 2px;
+            cursor: pointer;
+            z-index: 101;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .menu-line {
+            width: 20px;
+            height: 1px;
+            background: #666;
+            transition: all 0.3s ease;
+        }
+        
+        @media (max-width: 640px) {
+            .mobile-menu-toggle {
+                display: flex;
+            }
+            
+            .tg-buttons {
+                display: none;
+                position: fixed;
+                top: 70px;
+                right: 20px;
+                left: 20px;
+                background: rgba(20, 20, 20, 0.95);
+                border: 1px solid #333;
+                padding: 15px;
+                justify-content: center;
+            }
+            
+            .tg-buttons.mobile-open {
+                display: flex;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Анимированные элементы фона -->
-    <div class="bg-elements">
-        <div class="bg-element element-1"></div>
-        <div class="bg-element element-2"></div>
+    <div class="texture-overlay"></div>
+    <div class="glitch"></div>
+    
+    <!-- Telegram кнопки в правом верхнем углу -->
+    <div class="tg-buttons">
+        <a href="https://t.me/+wRSRv9SRegs2NWJi" target="_blank" class="tg-button">
+            <!-- Вставьте свою иконку в src -->
+            <img src="img/tg_anorlondo.jpg" alt="anorlondo">
+            <span class="tooltip">anorlondo</span>
+        </a>
+        <a href="https://t.me/+soq0CY-FBFxkNzBi" target="_blank" class="tg-button">
+            <img src="img/tg_capital.jpg" alt="capital">
+            <span class="tooltip">capital</span>
+        </a>
+        <a href="https://t.me/+k52fhZ4pZfJjMjUy" target="_blank" class="tg-button">
+            <img src="img/tg_antegria.jpg" alt="antegria">
+            <span class="tooltip">antegria</span>
+        </a>
+    </div>
+    
+    <!-- Мобильное меню -->
+    <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+        <div class="menu-line"></div>
+        <div class="menu-line"></div>
+        <div class="menu-line"></div>
     </div>
     
     <div class="container">
         <header>
-            <h1 class="logo">anorlondo</h1>
-            <p class="tagline">CSLB!</p>
-            
-            <div class="social-buttons">
-                <a href="https://t.me/+wRSRv9SRegs2NWJi" class="social-btn" target="_blank">
-                    <img src="img/tg_anorlondo.jpg" alt="Telegram">
-                    <span>anorlondo</span>
-                </a>
-                <a href="https://t.me/+soq0CY-FBFxkNzBi" class="social-btn" target="_blank">
-                    <img src="img/tg_capital.jpg" alt="Telegram">
-                    <span>tpc</span>
-                </a>
-                <a href="https://t.me/+k52fhZ4pZfJjMjUy" class="social-btn" target="_blank">
-                    <img src="img/tg_antegria.jpg" alt="Telegram">
-                    <span>antegriamoment
-                </a>
-            </div>
+            <h1 class="site-title fade-in">anorlodno</h1>
+            <div class="site-subtitle fade-in delay-1">.- -. --- .-. .-.. --- -. -.. ---</div>
         </header>
         
-        <div class="packs-grid">
-            <!-- Pack 1 -->
-            <div class="pack">
-                <div class="pack-header">
-                    <h2 class="pack-title">anorlondo</h2>
-                    <span class="pack-version">v2.4.2</span>
-                </div>
-                <p class="pack-description">
-                    РП КШЛБ с декорациями,одеждой и оружиями.                          
-                </p>
-                <div class="pack-footer">
-                    <a href="packs/anorlondo.zip" class="download-btn">
-                        <img src="https://www.svgrepo.com/show/485545/download-cloud-2.svg" alt="Download">
-                        download!
-                    </a>
-                    <div class="pack-stats">
-                        <div class="stat">
-                            <img src="https://www.svgrepo.com/show/530363/download.svg" alt="Downloads">
-                            24.7K
-                        </div>
-                        <div class="stat">
-                            <img src="https://www.svgrepo.com/show/532575/star.svg" alt="Rating">
-                            4.9
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Pack 2 -->
-            <div class="pack">
-                <div class="pack-header">
-                    <h2 class="pack-title">CosmicPack</h2>
-                    <span class="pack-version">v3.1.5</span>
-                </div>
-                <p class="pack-description">
-                Ресурспак сервера (DLC вместе).
-                </p>
-                <div class="pack-footer">
-                    <a href="packs/cosmicpack.zip" class="download-btn">
-                        <img src="https://www.svgrepo.com/show/485545/download-cloud-2.svg" alt="Download">
-                        ckaчatь!
-                    </a>
-                    <div class="pack-stats">
-                        <div class="stat">
-                            <img src="https://www.svgrepo.com/show/530363/download.svg" alt="Downloads">
-                            31.2K
-                        </div>
-                        <div class="stat">
-                            <img src="https://www.svgrepo.com/show/532575/star.svg" alt="Rating">
-                            4.8
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Pack 3 -->
-            <div class="pack">
-                <div class="pack-header">
-                    <h2 class="pack-title">anorface</h2>
-                    <span class="pack-version">v1.5.0</span>
-                </div>
-                <p class="pack-description">
-                     лицо анора на всех мобах
-                </p>
-                <div class="pack-footer">
-                    <a href="packs/anorface!!!.zip" class="download-btn">
-                        <img src="img/airplane.png" alt="Download">
-                        Скачать!
-                    </a>
-                    <div class="pack-stats">
-                        <div class="stat">
-                            <img src="https://www.svgrepo.com/show/530363/download.svg" alt="Downloads">
-                            19.8K
-                        </div>
-                        <div class="stat">
-                            <img src="https://www.svgrepo.com/show/532575/star.svg" alt="Rating">
-                            5.0
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div class="grunge-line fade-in delay-1"></div>
         
-        <footer>
-            <p>© 2025 anorlondo. Все права защищены oganamи.</p>
-            <p>Не аффилировано с Capital or Антегрия</p>
+        <section class="section fade-in delay-2">
+            <h2 class="section-title">Файлы</h2>
+            <div class="files-grid">
+                <div class="file-item">
+                    <span class="file-name">cosmicpack.zip</span>
+                    <div class="file-description">Ресурспак сервера</div>
+                    <span class="file-size">140 KB</span>
+                    <a href="cosmicpack.zip" class="download-link" download onclick="showNotification('Начинается загрузка cosmicpack.zip')">скачать</a>
+                </div>
+                
+                <div class="file-item">
+                    <span class="file-name">map.zip</span>
+                    <div class="file-description">карта со всеми предметами</div>
+                    <span class="file-size">3.3 MB</span>
+                    <a href="map.zip" class="download-link" download onclick="showNotification('Начинается загрузка map.zip')">скачать</a>
+                </div>
+            </div>
+        </section>
+        
+        <div class="grunge-line"></div>
+        
+        <footer class="fade-in delay-4">
+            <div class="footer-text">timofeyporno © 2025</div>
+            <div class="footer-text" style="margin-top: 8px; color: #444;">все материалы для коммерческого использования</div>
         </footer>
     </div>
+    
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Уведомления
+        const notification = document.getElementById('notification');
+        
+        function showNotification(text) {
+            notification.textContent = text;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Скачивание файлов (резервная функция)
+        function downloadFile(fileId) {
+            event.preventDefault();
+            
+            let fileName = '';
+            
+            if (fileId === 'file1') {
+                fileName = 'cosmicpack.zip';
+            } else {
+                fileName = 'map.zip';
+            }
+            
+            showNotification(`начата загрузка: ${fileName}`);
+        }
+        
+        // Мобильное меню
+        function toggleMobileMenu() {
+            const tgButtons = document.querySelector('.tg-buttons');
+            tgButtons.classList.toggle('mobile-open');
+        }
+        
+        // Случайные эффекты глюков
+        function createGlitchEffect() {
+            const glitch = document.querySelector('.glitch');
+            const glitchTypes = [
+                'linear-gradient(45deg, transparent 50%, rgba(255,0,0,0.1) 50%)',
+                'linear-gradient(-45deg, transparent 50%, rgba(0,255,0,0.1) 50%)',
+                'linear-gradient(90deg, transparent 50%, rgba(0,0,255,0.1) 50%)'
+            ];
+            
+            setInterval(() => {
+                if (Math.random() > 0.7) {
+                    glitch.style.background = glitchTypes[Math.floor(Math.random() * glitchTypes.length)];
+                }
+            }, 100);
+        }
+        
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            createGlitchEffect();
+            
+            // Постепенное появление элементов
+            const fadeElements = document.querySelectorAll('.fade-in');
+            fadeElements.forEach(el => {
+                el.style.animationPlayState = 'running';
+            });
+            
+            // Эффект мигания курсора в заголовке
+            const title = document.querySelector('.site-title');
+            let cursorVisible = true;
+            
+            setInterval(() => {
+                if (cursorVisible) {
+                    title.style.borderRight = '1px solid #444';
+                } else {
+                    title.style.borderRight = 'none';
+                }
+                cursorVisible = !cursorVisible;
+            }, 530);
+            
+            // Закрытие меню при клике вне его
+            document.addEventListener('click', function(event) {
+                const tgButtons = document.querySelector('.tg-buttons');
+                const menuToggle = document.querySelector('.mobile-menu-toggle');
+                
+                if (!tgButtons.contains(event.target) && !menuToggle.contains(event.target)) {
+                    tgButtons.classList.remove('mobile-open');
+                }
+            });
+            
+            // Проверка ссылок на файлы (для отладки)
+            const fileLinks = document.querySelectorAll('.download-link[href]');
+            fileLinks.forEach(link => {
+                const fileName = link.getAttribute('href');
+                console.log(`Проверка файла: ${fileName}`);
+            });
+        });
+        
+        // Инструкция
+        console.log('Сайт настроен для работы с реальными ссылками:');
+        console.log('1. Telegram кнопки ведут на каналы:');
+        console.log('   - https://t.me/anorlondo');
+        console.log('   - https://t.me/capital');
+        console.log('   - https://t.me/antegria');
+        console.log('2. Файлы для скачивания:');
+        console.log('   - cosmicpack.zip');
+        console.log('   - map.zip');
+        console.log('3. Положите файлы в ту же папку, что и HTML файл');
+    </script>
 </body>
 </html>
