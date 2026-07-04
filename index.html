@@ -1,566 +1,681 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>anorlodno</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Courier New', monospace;
-            background: #0a0a0a;
-            color: #d4d4d4;
-            line-height: 1.4;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            position: relative;
-        }
-        
-        /* Минималистичные гранж-текстуры */
-        .texture-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            opacity: 0.02;
-            background-image: 
-                repeating-linear-gradient(
-                    90deg,
-                    transparent,
-                    transparent 1px,
-                    rgba(255,255,255,0.05) 1px,
-                    rgba(255,255,255,0.05) 2px
-                );
-        }
-        
-        /* Telegram кнопки в правом верхнем углу */
-        .tg-buttons {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            gap: 8px;
-            z-index: 100;
-        }
-        
-        .tg-button {
-            width: 40px;
-            height: 40px;
-            background: rgba(30, 30, 30, 0.8);
-            border: 1px solid #333;
-            border-radius: 2px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            text-decoration: none;
-        }
-        
-        .tg-button:hover {
-            background: rgba(40, 40, 40, 0.9);
-            border-color: #555;
-            transform: translateY(-1px);
-        }
-        
-        .tg-button img {
-            width: 20px;
-            height: 20px;
-            filter: grayscale(100%) brightness(0.8);
-            transition: all 0.3s ease;
-            object-fit: cover;
-        }
-        
-        .tg-button:hover img {
-            filter: grayscale(50%) brightness(1.1);
-        }
-        
-        .tooltip {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            margin-top: 8px;
-            background: rgba(20, 20, 20, 0.95);
-            border: 1px solid #333;
-            padding: 6px 12px;
-            font-size: 12px;
-            color: #aaa;
-            white-space: nowrap;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            pointer-events: none;
-            z-index: 101;
-        }
-        
-        .tg-button:hover .tooltip {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        /* Заголовок */
-        header {
-            margin-bottom: 60px;
-            position: relative;
-        }
-        
-        .site-title {
-            font-size: 48px;
-            font-weight: normal;
-            letter-spacing: 2px;
-            margin-bottom: 8px;
-            color: #fff;
-            position: relative;
-            display: inline-block;
-        }
-        
-        .site-title::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 100%;
-            height: 1px;
-            background: #444;
-        }
-        
-        .site-subtitle {
-            font-size: 14px;
-            color: #777;
-            letter-spacing: 1px;
-        }
-        
-        /* Секции */
-        .section {
-            margin-bottom: 50px;
-        }
-        
-        .section-title {
-            font-size: 18px;
-            color: #aaa;
-            margin-bottom: 24px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-            display: inline-block;
-        }
-        
-        .section-title::before {
-            content: '[';
-            margin-right: 8px;
-            color: #666;
-        }
-        
-        .section-title::after {
-            content: ']';
-            margin-left: 8px;
-            color: #666;
-        }
-        
-        /* Файлы */
-        .files-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 16px;
-        }
-        
-        .file-item {
-            background: rgba(30, 30, 30, 0.5);
-            border: 1px solid #333;
-            padding: 20px;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-        
-        .file-item:hover {
-            border-color: #666;
-            background: rgba(40, 40, 40, 0.7);
-        }
-        
-        .file-name {
-            font-size: 18px;
-            color: #fff;
-            margin-bottom: 8px;
-            display: block;
-        }
-        
-        .file-description {
-            font-size: 14px;
-            color: #888;
-            margin-bottom: 16px;
-            line-height: 1.5;
-        }
-        
-        .file-size {
-            font-size: 12px;
-            color: #666;
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
-        
-        .download-link {
-            display: inline-block;
-            font-size: 14px;
-            color: #aaa;
-            text-decoration: none;
-            border-bottom: 1px solid #444;
-            padding-bottom: 2px;
-            transition: all 0.3s ease;
-        }
-        
-        .download-link:hover {
-            color: #fff;
-            border-bottom-color: #fff;
-        }
-        
-        /* Футер */
-        footer {
-            margin-top: 60px;
-            padding-top: 30px;
-            border-top: 1px solid #222;
-            text-align: center;
-        }
-        
-        .footer-text {
-            font-size: 12px;
-            color: #555;
-            letter-spacing: 1px;
-        }
-        
-        /* Эффекты потёртости */
-        .grunge-line {
-            height: 1px;
-            background: linear-gradient(90deg, 
-                transparent 0%, 
-                rgba(100, 100, 100, 0.3) 50%, 
-                transparent 100%);
-            margin: 30px 0;
-        }
-        
-        /* Анимации */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.8s ease forwards;
-            opacity: 0;
-        }
-        
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
-        .delay-4 { animation-delay: 0.4s; }
-        
-        /* Уведомления */
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(20, 20, 20, 0.95);
-            border: 1px solid #333;
-            padding: 12px 20px;
-            font-size: 13px;
-            color: #aaa;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
-        
-        .notification.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        /* Мобильная адаптация */
-        @media (max-width: 640px) {
-            .container {
-                padding: 60px 16px 30px;
-            }
-            
-            .tg-buttons {
-                top: 10px;
-                right: 10px;
-                gap: 6px;
-            }
-            
-            .tg-button {
-                width: 36px;
-                height: 36px;
-            }
-            
-            .tg-button img {
-                width: 18px;
-                height: 18px;
-            }
-            
-            .site-title {
-                font-size: 36px;
-            }
-            
-            .file-size {
-                position: static;
-                display: block;
-                margin-top: 8px;
-            }
-        }
-        
-        /* Случайные дефекты */
-        .glitch {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            opacity: 0;
-            animation: glitchEffect 20s infinite;
-        }
-        
-        @keyframes glitchEffect {
-            0%, 100% { opacity: 0; }
-            1%, 2% { opacity: 0.03; }
-            3%, 4% { opacity: 0; }
-            48%, 49% { opacity: 0.02; }
-            50%, 51% { opacity: 0; }
-            98%, 99% { opacity: 0.01; }
-        }
-        
-        /* Кнопка меню для мобильных (альтернатива) */
-        .mobile-menu-toggle {
-            display: none;
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            width: 40px;
-            height: 40px;
-            background: rgba(30, 30, 30, 0.8);
-            border: 1px solid #333;
-            border-radius: 2px;
-            cursor: pointer;
-            z-index: 101;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 4px;
-        }
-        
-        .menu-line {
-            width: 20px;
-            height: 1px;
-            background: #666;
-            transition: all 0.3s ease;
-        }
-        
-        @media (max-width: 640px) {
-            .mobile-menu-toggle {
-                display: flex;
-            }
-            
-            .tg-buttons {
-                display: none;
-                position: fixed;
-                top: 70px;
-                right: 20px;
-                left: 20px;
-                background: rgba(20, 20, 20, 0.95);
-                border: 1px solid #333;
-                padding: 15px;
-                justify-content: center;
-            }
-            
-            .tg-buttons.mobile-open {
-                display: flex;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Дневник охотников SVT — Тимофей и Иван Винс</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Kalam:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #e8dab3;
+    --paper-2: #ddc793;
+    --paper-shadow: #b9a066;
+    --ink: #2a1c10;
+    --ink-soft: #4a3a24;
+    --blood: #6e1616;
+    --blood-2: #8f2020;
+    --leather: #38220f;
+    --leather-dark: #1c1108;
+    --brass: #b7893f;
+    --brass-light: #d9b06a;
+    --glow: rgba(255, 178, 96, 0.18);
+  }
+
+  *{ box-sizing: border-box; }
+
+  html,body{
+    height:100%;
+    margin:0;
+    background:
+      radial-gradient(ellipse at 50% 0%, #3a2a1a 0%, #140d07 70%),
+      linear-gradient(180deg,#241609,#0e0904);
+    font-family:'EB Garamond', serif;
+    color:var(--ink);
+    overflow:hidden;
+  }
+
+  /* ---------- Ambient wood-desk stage ---------- */
+  .stage{
+    position:relative;
+    width:100%;
+    height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    perspective:2400px;
+  }
+
+  .stage::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(0,0,0,0.15) 0 2px, transparent 2px 140px);
+    opacity:.35;
+    pointer-events:none;
+  }
+
+  .candle-glow{
+    position:absolute;
+    top:-10%;
+    left:50%;
+    transform:translateX(-50%);
+    width:1200px;
+    height:900px;
+    background:radial-gradient(circle, var(--glow) 0%, transparent 60%);
+    animation:flicker 6s infinite ease-in-out;
+    pointer-events:none;
+  }
+  @keyframes flicker{
+    0%,100%{ opacity:.9; }
+    45%{ opacity:.6; }
+    50%{ opacity:1; }
+    72%{ opacity:.7; }
+  }
+
+  .title-plate{
+    position:absolute;
+    top:22px;
+    left:50%;
+    transform:translateX(-50%);
+    text-align:center;
+    z-index:5;
+    pointer-events:none;
+  }
+  .title-plate .eyebrow{
+    font-family:'Special Elite', monospace;
+    letter-spacing:.35em;
+    font-size:11px;
+    color:var(--brass-light);
+    opacity:.75;
+    text-transform:uppercase;
+  }
+  .title-plate h1{
+    font-family:'Kalam', cursive;
+    font-size:22px;
+    color:#e9d6ab;
+    margin:2px 0 0;
+    text-shadow:0 0 12px rgba(0,0,0,.6);
+  }
+
+  /* ---------- The book ---------- */
+  .book-wrap{
+    position:relative;
+    width:min(920px, 92vw);
+    height:min(620px, 78vh);
+  }
+
+  .spine{
+    position:absolute;
+    left:-14px;
+    top:-16px;
+    bottom:-16px;
+    width:34px;
+    background:
+      linear-gradient(90deg, var(--leather-dark), var(--leather) 40%, #2b1a0c 100%);
+    border-radius:6px 0 0 6px;
+    box-shadow: inset -4px 0 10px rgba(0,0,0,.6), 0 10px 30px rgba(0,0,0,.7);
+    z-index:1;
+  }
+  .spine::before{
+    content:"";
+    position:absolute; inset:8px 4px;
+    background-image: repeating-linear-gradient(180deg, transparent 0 22px, rgba(183,137,63,.35) 22px 24px);
+  }
+
+  .cover-frame{
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(ellipse at 30% 20%, #4a2f18, #241408 75%);
+    border-radius: 4px 10px 10px 4px;
+    box-shadow:
+      0 25px 60px rgba(0,0,0,.75),
+      inset 0 0 0 2px rgba(183,137,63,.25),
+      inset 0 0 40px rgba(0,0,0,.6);
+    padding: 14px 14px 14px 26px;
+    z-index:0;
+  }
+
+  .book{
+    position:relative;
+    width:100%;
+    height:100%;
+    transform-style:preserve-3d;
+  }
+
+  .page{
+    position:absolute;
+    inset:0;
+    transform-origin:left center;
+    transform-style:preserve-3d;
+    transition: transform 0.9s cubic-bezier(.6,.05,.28,1);
+  }
+  .page.flipped{ transform:rotateY(-179.5deg); }
+
+  .face{
+    position:absolute; inset:0;
+    background: var(--paper);
+    -webkit-backface-visibility:hidden;
+    backface-visibility:hidden;
+    border-radius: 2px 8px 8px 2px;
+    box-shadow: inset 0 0 60px rgba(120,90,40,.25), 2px 0 10px rgba(0,0,0,.25);
+    overflow:hidden;
+  }
+  .face.back{ transform: rotateY(180deg); }
+
+  .paper-texture{
+    position:absolute; inset:0;
+    background-image:
+      radial-gradient(ellipse at 85% 8%, rgba(150,110,50,.35), transparent 40%),
+      radial-gradient(ellipse at 10% 92%, rgba(120,90,40,.3), transparent 45%),
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.015) 0 1px, transparent 1px 3px);
+    mix-blend-mode:multiply;
+    pointer-events:none;
+  }
+  .burnt-edge{
+    position:absolute; inset:0;
+    pointer-events:none;
+    box-shadow: inset 0 0 40px 6px rgba(60,30,10,.35);
+  }
+
+  .content{
+    position:relative;
+    height:100%;
+    padding: 34px 40px 46px;
+    overflow-y:auto;
+    z-index:2;
+  }
+  .content::-webkit-scrollbar{ width:6px; }
+  .content::-webkit-scrollbar-thumb{ background:var(--paper-shadow); border-radius:4px; }
+
+  .stamp{
+    font-family:'Special Elite', monospace;
+    font-size:10px;
+    letter-spacing:.2em;
+    color:var(--blood);
+    text-transform:uppercase;
+    opacity:.75;
+    border:1px solid var(--blood);
+    display:inline-block;
+    padding:3px 8px;
+    transform:rotate(-3deg);
+    margin-bottom:10px;
+  }
+
+  h2.page-title{
+    font-family:'Special Elite', monospace;
+    font-size: 22px;
+    color:var(--ink);
+    letter-spacing:.03em;
+    margin: 0 0 4px;
+    border-bottom:2px solid var(--ink-soft);
+    padding-bottom:8px;
+    display:inline-block;
+  }
+  .subhead{
+    font-family:'Kalam', cursive;
+    color:var(--blood);
+    font-size:16px;
+    margin:18px 0 6px;
+  }
+  p, li{
+    font-size:16px;
+    line-height:1.55;
+    color:var(--ink-soft);
+  }
+  ul{ margin:6px 0 14px 18px; padding:0; }
+  li{ margin-bottom:6px; }
+  strong{ color:var(--ink); }
+
+  .note{
+    font-family:'Kalam', cursive;
+    font-size:15px;
+    color:var(--blood-2);
+    background: rgba(110,22,22,.06);
+    border-left:3px solid var(--blood);
+    padding:8px 12px;
+    margin:12px 0;
+    transform:rotate(-0.4deg);
+  }
+  .note strong{ font-weight:700; color:var(--blood); }
+
+  .content a{
+    color: var(--blood);
+    font-weight:700;
+    text-decoration: underline dashed;
+    text-underline-offset:3px;
+    cursor:pointer;
+    transition: color .2s ease;
+  }
+  .content a:hover{ color: var(--blood-2); }
+
+  .divider{
+    width:60px; height:2px; background:var(--ink-soft); opacity:.4;
+    margin:14px 0;
+  }
+
+  /* watermark sigil */
+  .sigil{
+    position:absolute;
+    width:230px; height:230px;
+    right:-30px; bottom:-30px;
+    opacity:.06;
+    pointer-events:none;
+  }
+
+  /* ---------- Cover page ---------- */
+  .cover-face{
+    background:
+      radial-gradient(ellipse at 50% 30%, #4b3018, #201105 80%);
+  }
+  .cover-inner{
+    height:100%;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; color:#e4cd9a;
+    position:relative;
+  }
+  .emblem{ width:150px; height:150px; opacity:.9; filter:drop-shadow(0 0 10px rgba(217,176,106,.4)); }
+  .cover-inner h1{
+    font-family:'Kalam', cursive;
+    font-size:34px;
+    margin:18px 0 2px;
+    color:#f1dfae;
+    text-shadow:0 2px 8px rgba(0,0,0,.6);
+  }
+  .cover-inner .sub{
+    font-family:'Special Elite', monospace;
+    letter-spacing:.25em;
+    font-size:12px;
+    color:var(--brass-light);
+    text-transform:uppercase;
+    opacity:.85;
+  }
+  .cover-inner .hint{
+    margin-top:26px;
+    font-family:'EB Garamond', serif;
+    font-style:italic;
+    font-size:14px;
+    color:#c9b184;
+    opacity:.8;
+  }
+
+  /* ---------- last page ---------- */
+  .end-face .cover-inner h1{ font-size:26px; }
+
+  /* ---------- Controls ---------- */
+  .nav-btn{
+    position:absolute;
+    top:50%; transform:translateY(-50%);
+    width:46px; height:46px;
+    border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, var(--brass-light), var(--brass) 60%, #6b4a1f 100%);
+    box-shadow:0 4px 12px rgba(0,0,0,.6), inset 0 0 4px rgba(255,255,255,.4);
+    border:none;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    z-index:20;
+    transition: transform .15s ease, filter .15s ease;
+  }
+  .nav-btn:hover{ filter:brightness(1.15); transform:translateY(-50%) scale(1.06); }
+  .nav-btn:active{ transform:translateY(-50%) scale(.94); }
+  .nav-btn.prev{ left:-58px; }
+  .nav-btn.next{ right:-58px; }
+  .nav-btn svg{ width:18px; height:18px; fill:#241408; }
+  .nav-btn:disabled{ opacity:.25; cursor:default; }
+  .nav-btn:disabled:hover{ filter:none; transform:translateY(-50%); }
+
+  .page-counter{
+    position:absolute;
+    bottom:-38px;
+    left:50%; transform:translateX(-50%);
+    font-family:'Special Elite', monospace;
+    font-size:12px;
+    letter-spacing:.15em;
+    color:#c9ad78;
+    z-index:10;
+  }
+
+  .toc{
+    position:absolute;
+    top:-40px;
+    left:50%; transform:translateX(-50%);
+    display:flex;
+    gap:6px;
+    z-index:10;
+  }
+  .toc span{
+    width:7px; height:7px; border-radius:50%;
+    background:rgba(201,173,120,.3);
+    display:inline-block;
+    transition:background .3s;
+  }
+  .toc span.active{ background: var(--brass-light); box-shadow:0 0 6px var(--brass-light); }
+
+  @media (max-width:720px){
+    .nav-btn.prev{ left:6px; }
+    .nav-btn.next{ right:6px; }
+    .nav-btn{ width:38px; height:38px; }
+    .content{ padding:26px 20px 36px; }
+    h2.page-title{ font-size:18px; }
+    p, li{ font-size:14.5px; }
+    .book-wrap{ width:94vw; height:80vh; }
+  }
+</style>
 </head>
 <body>
-    <div class="texture-overlay"></div>
-    <div class="glitch"></div>
-    
-    <!-- Telegram кнопки в правом верхнем углу -->
-    <div class="tg-buttons">
-        <a href="https://t.me/+wRSRv9SRegs2NWJi" target="_blank" class="tg-button">
-            <!-- Вставьте свою иконку в src -->
-            <img src="img/tg_anorlondo.jpg" alt="anorlondo">
-            <span class="tooltip">anorlondo</span>
-        </a>
-        <a href="https://t.me/+soq0CY-FBFxkNzBi" target="_blank" class="tg-button">
-            <img src="img/tg_capital.jpg" alt="capital">
-            <span class="tooltip">capital</span>
-        </a>
-        <a href="https://t.me/+k52fhZ4pZfJjMjUy" target="_blank" class="tg-button">
-            <img src="img/tg_antegria.jpg" alt="antegria">
-            <span class="tooltip">antegria</span>
-        </a>
-    </div>
-    
-    <!-- Мобильное меню -->
-    <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
-        <div class="menu-line"></div>
-        <div class="menu-line"></div>
-        <div class="menu-line"></div>
-    </div>
-    
-    <div class="container">
-        <header>
-            <h1 class="site-title fade-in">anorlodno</h1>
-            <div class="site-subtitle fade-in delay-1">.- -. --- .-. .-.. --- -. -.. ---</div>
-        </header>
-        
-        <div class="grunge-line fade-in delay-1"></div>
-        
-        <section class="section fade-in delay-2">
-            <h2 class="section-title">Файлы</h2>
-            <div class="files-grid">
-                <div class="file-item">
-                    <span class="file-name">cosmicpack.zip</span>
-                    <div class="file-description">Ресурспак сервера</div>
-                    <span class="file-size">140 KB</span>
-                    <a href="cosmicpack.zip" class="download-link" download onclick="showNotification('Начинается загрузка cosmicpack.zip')">скачать</a>
-                </div>
-                
-                <div class="file-item">
-                    <span class="file-name">map.zip</span>
-                    <div class="file-description">карта со всеми предметами</div>
-                    <span class="file-size">3.3 MB</span>
-                    <a href="map.zip" class="download-link" download onclick="showNotification('Начинается загрузка map.zip')">скачать</a>
-                </div>
-            </div>
-        </section>
-        
-        <div class="grunge-line"></div>
-        
-        <footer class="fade-in delay-4">
-            <div class="footer-text">timofeyporno © 2025</div>
-            <div class="footer-text" style="margin-top: 8px; color: #444;">все материалы для коммерческого использования</div>
-        </footer>
-    </div>
-    
-    <div class="notification" id="notification"></div>
 
-    <script>
-        // Уведомления
-        const notification = document.getElementById('notification');
-        
-        function showNotification(text) {
-            notification.textContent = text;
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
-        
-        // Скачивание файлов (резервная функция)
-        function downloadFile(fileId) {
-            event.preventDefault();
-            
-            let fileName = '';
-            
-            if (fileId === 'file1') {
-                fileName = 'cosmicpack.zip';
-            } else {
-                fileName = 'map.zip';
-            }
-            
-            showNotification(`начата загрузка: ${fileName}`);
-        }
-        
-        // Мобильное меню
-        function toggleMobileMenu() {
-            const tgButtons = document.querySelector('.tg-buttons');
-            tgButtons.classList.toggle('mobile-open');
-        }
-        
-        // Случайные эффекты глюков
-        function createGlitchEffect() {
-            const glitch = document.querySelector('.glitch');
-            const glitchTypes = [
-                'linear-gradient(45deg, transparent 50%, rgba(255,0,0,0.1) 50%)',
-                'linear-gradient(-45deg, transparent 50%, rgba(0,255,0,0.1) 50%)',
-                'linear-gradient(90deg, transparent 50%, rgba(0,0,255,0.1) 50%)'
-            ];
-            
-            setInterval(() => {
-                if (Math.random() > 0.7) {
-                    glitch.style.background = glitchTypes[Math.floor(Math.random() * glitchTypes.length)];
-                }
-            }, 100);
-        }
-        
-        // Инициализация
-        document.addEventListener('DOMContentLoaded', function() {
-            createGlitchEffect();
-            
-            // Постепенное появление элементов
-            const fadeElements = document.querySelectorAll('.fade-in');
-            fadeElements.forEach(el => {
-                el.style.animationPlayState = 'running';
-            });
-            
-            // Эффект мигания курсора в заголовке
-            const title = document.querySelector('.site-title');
-            let cursorVisible = true;
-            
-            setInterval(() => {
-                if (cursorVisible) {
-                    title.style.borderRight = '1px solid #444';
-                } else {
-                    title.style.borderRight = 'none';
-                }
-                cursorVisible = !cursorVisible;
-            }, 530);
-            
-            // Закрытие меню при клике вне его
-            document.addEventListener('click', function(event) {
-                const tgButtons = document.querySelector('.tg-buttons');
-                const menuToggle = document.querySelector('.mobile-menu-toggle');
-                
-                if (!tgButtons.contains(event.target) && !menuToggle.contains(event.target)) {
-                    tgButtons.classList.remove('mobile-open');
-                }
-            });
-            
-            // Проверка ссылок на файлы (для отладки)
-            const fileLinks = document.querySelectorAll('.download-link[href]');
-            fileLinks.forEach(link => {
-                const fileName = link.getAttribute('href');
-                console.log(`Проверка файла: ${fileName}`);
-            });
-        });
-        
-        // Инструкция
-        console.log('Сайт настроен для работы с реальными ссылками:');
-        console.log('1. Telegram кнопки ведут на каналы:');
-        console.log('   - https://t.me/anorlondo');
-        console.log('   - https://t.me/capital');
-        console.log('   - https://t.me/antegria');
-        console.log('2. Файлы для скачивания:');
-        console.log('   - cosmicpack.zip');
-        console.log('   - map.zip');
-        console.log('3. Положите файлы в ту же папку, что и HTML файл');
-    </script>
+<div class="stage">
+  <div class="candle-glow"></div>
+  <div class="title-plate">
+    <div class="eyebrow">Личное имущество · не подлежит разглашению</div>
+    <h1>Дневник охотников SVT</h1>
+  </div>
+
+  <div class="book-wrap">
+    <div class="toc" id="toc"></div>
+    <div class="spine"></div>
+    <div class="cover-frame">
+      <div class="book" id="book"></div>
+    </div>
+    <button class="nav-btn prev" id="prevBtn" aria-label="Предыдущая страница">
+      <svg viewBox="0 0 24 24"><path d="M15 4l-8 8 8 8 1.4-1.4L9.8 12l6.6-6.6z"/></svg>
+    </button>
+    <button class="nav-btn next" id="nextBtn" aria-label="Следующая страница">
+      <svg viewBox="0 0 24 24"><path d="M9 4l8 8-8 8-1.4-1.4L14.2 12 7.6 5.4z"/></svg>
+    </button>
+    <div class="page-counter" id="pageCounter">1 / 11</div>
+  </div>
+</div>
+
+<script>
+const sigilSVG = `<svg class="sigil" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="100" cy="100" r="90" fill="none" stroke="#2a1c10" stroke-width="2"/>
+  <circle cx="100" cy="100" r="70" fill="none" stroke="#2a1c10" stroke-width="1"/>
+  <polygon points="100,20 137,155 15,72 185,72 63,155" fill="none" stroke="#2a1c10" stroke-width="2"/>
+  <circle cx="100" cy="100" r="8" fill="#2a1c10"/>
+</svg>`;
+
+const emblemSVG = `<svg class="emblem" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="100" cy="100" r="92" fill="none" stroke="#d9b06a" stroke-width="2.5"/>
+  <circle cx="100" cy="100" r="74" fill="none" stroke="#d9b06a" stroke-width="1.5"/>
+  <g stroke="#d9b06a" stroke-width="2">
+    <line x1="100" y1="8" x2="100" y2="40"/>
+    <line x1="100" y1="160" x2="100" y2="192"/>
+    <line x1="8" y1="100" x2="40" y2="100"/>
+    <line x1="160" y1="100" x2="192" y2="100"/>
+    <line x1="34" y1="34" x2="58" y2="58"/>
+    <line x1="142" y1="142" x2="166" y2="166"/>
+    <line x1="166" y1="34" x2="142" y2="58"/>
+    <line x1="58" y1="142" x2="34" y2="166"/>
+  </g>
+  <polygon points="100,44 128,152 26,80 174,80 72,152" fill="none" stroke="#d9b06a" stroke-width="2.5"/>
+  <circle cx="100" cy="100" r="10" fill="#d9b06a"/>
+</svg>`;
+
+const pages = [
+  // 0 — cover
+  {
+    cls: 'cover-face',
+    front: `
+      <div class="cover-inner">
+        ${emblemSVG}
+        <h1>Дневник охотников SVT</h1>
+        <div class="sub">Тимофей и Иван Винс</div>
+        <div class="hint">— открой, если готов узнать правду —</div>
+      </div>`,
+    back: `<div class="content"><div class="paper-texture"></div>${sigilSVG}
+      <span class="stamp">Хранить у сердца</span>
+      <p style="margin-top:40px;">Эта тетрадь передавалась из рук в руки каждому, кто решил, что нечисть не пройдёт мимо него незамеченной. Соль на подоконниках, клинок под подушкой, огниво в кармане — стандартный набор ночи.</p>
+      <p>Дальше — всё, что мы знаем. Читай внимательно. Второго шанса нечисть не даёт.</p>
+    </div>`
+  },
+  // 1 — intro
+  {
+    front: `<div class="content"><div class="paper-texture"></div>${sigilSVG}
+      <span class="stamp">Запись первая</span>
+      <h2 class="page-title">Если ты это читаешь...</h2>
+      <p>...значит, что-то уже скребётся за дверью, а ты не знаешь, солью его встречать или свинцом.</p>
+      <div class="note"><strong>Тим:</strong> Слушай сюда и не геройствуй. Правила писаны кровью — в основном моей.</div>
+      <div class="note"><strong>Иван:</strong> Каждое существо здесь убито хоть раз. Метод — не теория, а протокол выживания.</div>
+      <p>Дальше — оружие, которое должно быть под рукой всегда, и порядок действий для каждой твари, которую можно встретить на этой земле. Ошибиться с методом — значит не встретить рассвет.</p>
+    </div>`,
+    back: `<div class="content"><div class="paper-texture"></div>
+      <span class="stamp">На полях</span>
+      <p style="margin-top:60px; font-family:'Kalam',cursive; font-size:18px; color:var(--blood-2); text-align:center;">
+        «Не всё, что улыбается тебе в темноте — друг.»
+      </p>
+    </div>`
+  },
+  // 2 — дневник продолжается
+  {
+    front: `<div class="content"><div class="paper-texture"></div>${sigilSVG}
+      <span class="stamp">Важная запись</span>
+      <h2 class="page-title">Дневник продолжается</h2>
+      <p>Эта тетрадь не закончена — она будет дописываться на протяжении всего сезона. Новые твари, новые методы, фотографии с охоты и находки — всё будет добавляться сюда по ходу событий.</p>
+      <div class="note"><strong>Тим:</strong> Нашёл что-то полезное или заснял след — не держи при себе. Присылай, пусть остальные тоже знают.</div>
+      <div class="divider"></div>
+      <p>Присылай находки, фото и записи в предложку <a href="https://t.me/+fYMGlp6vCx9kOGQy" target="_blank" rel="noopener">КБ</a>.</p>
+      <p>Следи за новыми записями и обновлениями в канале <a href="https://t.me/+_TJR1SZW6phjNDFi" target="_blank" rel="noopener">SVT</a>.</p>
+      <div class="note"><strong>Иван:</strong> Дневник живой, пока его пишут. Не молчи о том, что видел.</div>
+    </div>`,
+    back: `<div class="content"><div class="paper-texture"></div>
+      <p style="margin-top:60px; font-family:'Kalam',cursive; font-size:16px; color:var(--ink-soft); text-align:center;">Место для будущих фотографий и вырезок.</p>
+    </div>`
+  },
+  // 3 — оружие
+  {
+    front: `<div class="content"><div class="paper-texture"></div>${sigilSVG}
+      <span class="stamp">Снаряжение</span>
+      <h2 class="page-title">Оружие и экипировка охотника</h2>
+      <p>В инвентаре всегда должен быть правильный арсенал — без него в ночную смену лучше не выходить.</p>
+      <ul>
+        <li><strong>Святая вода</strong> — исцеляющие взрывные колбы. Держи под рукой, льётся туда, где не должна оставаться нечисть.</li>
+        <li><strong>Соль</strong> — сахар или перекрашенный в белый сахар. Простая вещь, а держит границу лучше стальной двери.</li>
+        <li><strong>Серебряные клинки</strong> — железные мечи. Металл, который твари уважают.</li>
+        <li><strong>Дробовик с солью</strong> — арбалет. Первый выстрел почти всегда решающий.</li>
+        <li><strong>Кольт</strong> — лук. Легенда о нём больше, чем сам ствол, но бьёт метко.</li>
+        <li><strong>Огниво</strong> — последняя точка почти в каждой охоте. Огонь не оставляет второго шанса.</li>
+      </ul>
+      <div class="note"><strong>Тимофей:</strong> Проверяй сумку перед выездом. Дважды. Потом ещё раз.</div>
+    </div>`,
+    back: `<div class="content"><div class="paper-texture"></div>
+      <p style="margin-top:40px;">Пустой лист. Дописать снаряжение по мере находок.</p>
+    </div>`
+  },
+  // 3 — зомби/скелеты
+  {
+    front: `<div class="content"><div class="paper-texture"></div>${sigilSVG}
+      <span class="stamp">Охота · часть I</span>
+      <h2 class="page-title">Как канонично уничтожать нечисть</h2>
+      <p>Убивай только так — импровизация здесь стоит жизни.</p>
+      <div class="subhead">Зомби и Утопленники (гули / зомби)</div>
+      <p>Уничтожаются только одним способом: обезглавливанием или точным выстрелом в голову. Никаких компромиссов.</p>
+      <div class="divider"></div>
+      <div class="subhead">Скелеты и Зимогоры (призраки)</div>
+      <p>Сначала стреляй из арбалета, затем добивай железным мечом. Собери его кости и положи в сундук. После — сожги содержимое огнивом. Пока кости целы, призрак вернётся.</p>
+      <div class="note"><strong>Ваня:</strong> Порядок важен: сначала ослабить, потом упокоить, потом сжечь. Пропустишь шаг — он вернётся злее.</div>
+    </div>`,
+    back: `<div class="content"><div class="paper-texture"></div>
+      <p style="margin-top:40px; font-family:'Kalam',cursive; font-size:16px; color:var(--ink-soft);">Заметка на обороте: соль вокруг сундука с костями — лишним не будет.</p>
+    </div>`
+  },
+  // 4 — ведьмы
+  {
+    front: `<div class="content"><div class="paper-texture"></div>${sigilSVG}
+      <span class="stamp">Охота · часть II</span>
+      <h2 class="page-title">Ведьмы</h2>
+      <p>Ведьм убивают ведьминым мешочком (заклинанием) или обычным физическим уроном — пока она не успела наколдовать защиту.</p>
+      <ul>
+        <li>Атакуй толпой, с железными ножами или мечами — в одиночку рискованно.</li>
+        <li>Закидай её взрывными зельями урона — зелье против зелья работает безотказно.</li>
+        <li>Сожги её избушку огнивом — обиталище должно исчезнуть вместе с хозяйкой.</li>
+      </ul>
+      <div class="note"><strong>Тим:</strong> Не давай ей время договорить заклинание. Первая секунда — твоя, вторая — уже её.</div>
+    </div>`,
+    back: `<div class="content"><div class="paper-texture"></div>
+      <p style="margin-top:60px; font-family:'Kalam',cursive; font-size:18px; color:var(--blood-2); text-align:center;">
+        «Хижину — в пепел. Иначе вырастет новая.»
+      </p>
+    </div>`
+  },
+  // 5 — странник края / незер
+  {
+    front: `<div class="content"><div class="paper-texture"></div>${sigilSVG}
+      <span class="stamp">Охота · часть III</span>
+      <h2 class="page-title">Странник Края и обитатели Незера</h2>
+      <div class="subhead">Странник Края (перекрёстный демон)</div>
+      <p>Окружи себя кругом из соли или встань в святую воду — воды они боятся сильнее огня.</p>
+      <div class="divider"></div>
+      <div class="subhead">Обитатели Незера (демоны)</div>
+      <p>Все, кто пришёл оттуда — чистокровные демоны. Бери с собой святую воду и бей клинками. Без подготовки в Незер лучше не соваться вовсе.</p>
+      <div class="note"><strong>Иван:</strong> Круг соли держит крепче любой двери. Проверено — не один раз.</div>
+    </div>`,
+    back: `<div class="content"><div class="paper-texture"></div>
+      <p style="margin-top:60px; font-family:'Kalam',cursive; font-size:16px; color:var(--ink-soft); text-align:center;">Пепел от заметок о сделках. Читать осторожно.</p>
+    </div>`
+  },
+  // 6 — крипер
+  {
+    front: `<div class="content"><div class="paper-texture"></div>${sigilSVG}
+      <span class="stamp">Охота · часть IV</span>
+      <h2 class="page-title">Крипер (ходячий АРРЧ)</h2>
+      <p>Метод простой и без вариантов: вырой могилу, положи его туда и сожги.</p>
+      <div class="note"><strong>Тимофей:</strong> Держись подальше при взрыве. Уважай дистанцию — это не геройство, а здравый смысл.</div>
+      <div class="divider"></div>
+      <p>После — засыпь землёй и отметь место солью, чтобы никто по случайности не откопал.</p>
+    </div>`,
+    back: `<div class="content"><div class="paper-texture"></div>
+      <p style="margin-top:70px; text-align:center; font-family:'Kalam',cursive; font-size:16px; color:var(--ink-soft);">Место захоронения — отметить на карте.</p>
+    </div>`
+  },
+  // 7 — вызыватель/иллюзионист
+  {
+    front: `<div class="content"><div class="paper-texture"></div>${sigilSVG}
+      <span class="stamp">Охота · часть V</span>
+      <h2 class="page-title">Вызыватель и Иллюзионист</h2>
+      <p>Языческие боги и фокусники. Против них — особое оружие: деревянный колот (деревянный меч).</p>
+      <div class="note"><strong>Ваня:</strong> Железо и серебро здесь бесполезны. Только дерево пробивает их иллюзии.</div>
+      <p>Не верь ничему, что видишь рядом с ними, пока не нанесён первый удар — половина боя происходит у тебя в голове.</p>
+    </div>`,
+    back: `<div class="content"><div class="paper-texture"></div>
+      <p style="margin-top:70px; text-align:center; font-family:'Kalam',cursive; font-size:16px; color:var(--ink-soft);">Если видишь то, чего не может быть — это не может быть.</p>
+    </div>`
+  },
+  // 8 — защита убежища
+  {
+    front: `<div class="content"><div class="paper-texture"></div>${sigilSVG}
+      <span class="stamp">Правила выживания</span>
+      <h2 class="page-title">Защита убежища</h2>
+      <p>По периметру базы или дома обязательно просыпь сплошную линию из соли. Через неё не должен пройти ни один моб — ни щели, ни разрывов.</p>
+      <p>На двери повесь рамки с железными слитками. Простая мера, которая не раз спасала жизни в этой семье.</p>
+      <div class="note"><strong>Тим:</strong> Проверяй линию соли после дождя и ветра. Разрыв в палец шириной — уже приглашение.</div>
+    </div>`,
+    back: `<div class="content"><div class="paper-texture"></div>
+      <p style="margin-top:60px; font-family:'Kalam',cursive; font-size:16px; color:var(--ink-soft); text-align:center;">Соль закончилась — закончилась и безопасность. Запасайся впрок.</p>
+    </div>`
+  },
+  // 9 — бункер
+  {
+    front: `<div class="content"><div class="paper-texture"></div>${sigilSVG}
+      <span class="stamp">Правила выживания</span>
+      <h2 class="page-title">Бункер Просвещённых</h2>
+      <p>Место святых людей. Обычному человеку без сверхспособностей попасть внутрь можно только в двух случаях:</p>
+      <ul>
+        <li>если у него есть ключ от бункера;</li>
+        <li>если его пригласил кто-то из посвящённых.</li>
+      </ul>
+      <div class="note"><strong>Иван:</strong> Бункер — не просто стены. Это последняя линия, если снаружи всё пошло не так.</div>
+    </div>`,
+    back: `<div class="content"><div class="paper-texture"></div>
+      <p style="margin-top:70px; text-align:center; font-family:'Kalam',cursive; font-size:16px; color:var(--ink-soft);">Список ключей — хранить отдельно от этой тетради.</p>
+    </div>`
+  },
+  // 10 — конец
+  {
+    cls: 'end-face',
+    front: `<div class="content"><div class="paper-texture"></div>${sigilSVG}
+      <span class="stamp">Последняя запись</span>
+      <h2 class="page-title">На сегодня всё</h2>
+      <p>Это не всё, что есть в мире тьмы — лишь то, что мы успели записать и проверить на собственной шкуре.</p>
+      <div class="note"><strong>Тимофей:</strong> Если наткнёшься на что-то новое — впиши сюда. Следующему это спасёт жизнь.</div>
+      <p style="margin-top:20px; font-family:'Kalam',cursive; font-size:18px; text-align:right; color:var(--ink);">— Т., И. Винс</p>
+    </div>`,
+    back: `<div class="cover-inner">
+      ${emblemSVG}
+      <div class="sub" style="margin-top:14px;">Спасай людей. Охоться на тварей.</div>
+      <div class="hint">семейное дело</div>
+    </div>`
+  },
+];
+
+const bookEl = document.getElementById('book');
+const tocEl = document.getElementById('toc');
+const total = pages.length;
+let current = 0;
+
+pages.forEach((p, i) => {
+  const pageDiv = document.createElement('div');
+  pageDiv.className = 'page';
+  pageDiv.style.zIndex = total - i;
+  pageDiv.innerHTML = `
+    <div class="face front ${p.cls || ''}">${p.front}<div class="burnt-edge"></div></div>
+    <div class="face back ${i===total-1 ? p.cls||'' : ''}">${p.back}<div class="burnt-edge"></div></div>
+  `;
+  bookEl.appendChild(pageDiv);
+
+  const dot = document.createElement('span');
+  tocEl.appendChild(dot);
+});
+
+const pageEls = Array.from(bookEl.children);
+const dotEls = Array.from(tocEl.children);
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const counter = document.getElementById('pageCounter');
+
+function render(animating=false){
+  pageEls.forEach((el, i) => {
+    if(!animating){
+      el.style.zIndex = i < current ? i : (total - i);
+    }
+    el.classList.toggle('flipped', i < current);
+  });
+  dotEls.forEach((d, i) => d.classList.toggle('active', i === Math.min(current, total-1)));
+  const shown = Math.min(current+1, total);
+  counter.textContent = shown + ' / ' + total;
+  prevBtn.disabled = current === 0;
+  nextBtn.disabled = current >= total;
+}
+
+function next(){
+  if(current >= total) return;
+  const el = pageEls[current];
+  el.style.zIndex = 500;
+  el.classList.add('flipped');
+  current++;
+  setTimeout(() => render(), 900);
+  render(true);
+}
+
+function prev(){
+  if(current === 0) return;
+  current--;
+  const el = pageEls[current];
+  el.style.zIndex = 500;
+  el.classList.remove('flipped');
+  setTimeout(() => render(), 900);
+  render(true);
+}
+
+nextBtn.addEventListener('click', next);
+prevBtn.addEventListener('click', prev);
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'ArrowRight') next();
+  if(e.key === 'ArrowLeft') prev();
+});
+
+render();
+</script>
 </body>
 </html>
