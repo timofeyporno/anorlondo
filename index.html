@@ -164,6 +164,11 @@
   }
   .face.back{ transform: rotateY(180deg); }
 
+  .page .face.front{ opacity:1; visibility:visible; }
+  .page .face.back{ opacity:0; visibility:hidden; }
+  .page.show-back .face.front{ opacity:0; visibility:hidden; }
+  .page.show-back .face.back{ opacity:1; visibility:visible; }
+
   .paper-texture{
     position:absolute; inset:0;
     background-image:
@@ -249,6 +254,57 @@
     transition: color .2s ease;
   }
   .content a:hover{ color: var(--blood-2); }
+
+  .taped-photo{
+    position:relative;
+    width:200px;
+    margin:38px auto 10px;
+    background:#efe6d2;
+    padding:10px 10px 34px;
+    box-shadow: 0 10px 22px rgba(0,0,0,.45), 0 1px 0 rgba(255,255,255,.4) inset;
+    transform: rotate(-3.5deg);
+  }
+  .photo-placeholder{
+    width:100%;
+    height:150px;
+    background:
+      radial-gradient(ellipse at 30% 20%, #4a3a26, transparent 60%),
+      linear-gradient(135deg,#5b4a34,#231a10);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    filter:sepia(.2);
+  }
+  .photo-placeholder span{
+    font-family:'Kalam', cursive;
+    font-size:12px;
+    color:#cbb583;
+    opacity:.8;
+  }
+  .photo-caption{
+    position:absolute;
+    bottom:8px; left:0; right:0;
+    text-align:center;
+    font-family:'Kalam', cursive;
+    font-size:12px;
+    color:var(--ink-soft);
+  }
+  .tape{
+    position:absolute;
+    width:64px; height:24px;
+    background: linear-gradient(180deg, rgba(232,220,180,.75), rgba(210,196,150,.6));
+    box-shadow:0 1px 3px rgba(0,0,0,.35);
+    opacity:.85;
+  }
+  .tape::after{
+    content:"";
+    position:absolute; inset:0;
+    background: repeating-linear-gradient(115deg, transparent 0 3px, rgba(255,255,255,.25) 3px 4px);
+  }
+  .tape-left{ top:-12px; left:-10px; transform: rotate(-38deg); }
+  .tape-right{ top:-12px; right:-10px; transform: rotate(38deg); }
 
   .divider{
     width:60px; height:2px; background:var(--ink-soft); opacity:.4;
@@ -439,6 +495,7 @@ const pages = [
       <div class="note"><strong>Тим:</strong> Слушай сюда и не геройствуй. Правила писаны кровью — в основном моей.</div>
       <div class="note"><strong>Иван:</strong> Каждое существо здесь убито хоть раз. Метод — не теория, а протокол выживания.</div>
       <p>Дальше — оружие, которое должно быть под рукой всегда, и порядок действий для каждой твари, которую можно встретить на этой земле. Ошибиться с методом — значит не встретить рассвет.</p>
+      <div class="note"><strong>Важно:</strong> вступая в Штат Орегон, ты обязуешься всё время следовать этим РП-правилам без исключений.</div>
     </div>`,
     back: `<div class="content"><div class="paper-texture"></div>
       <span class="stamp">На полях</span>
@@ -460,7 +517,17 @@ const pages = [
       <div class="note"><strong>Иван:</strong> Дневник живой, пока его пишут. Не молчи о том, что видел.</div>
     </div>`,
     back: `<div class="content"><div class="paper-texture"></div>
-      <p style="margin-top:60px; font-family:'Kalam',cursive; font-size:16px; color:var(--ink-soft); text-align:center;">Место для будущих фотографий и вырезок.</p>
+      <span class="stamp">Вложение №1</span>
+      <div class="taped-photo">
+        <div class="tape tape-left"></div>
+        <div class="tape tape-right"></div>
+        <div class="photo-placeholder">
+          <svg viewBox="0 0 64 64" width="34" height="34"><path fill="#cbb583" d="M8 20h10l4-6h20l4 6h10a2 2 0 0 1 2 2v28a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V22a2 2 0 0 1 2-2z" fill-opacity=".25" stroke="#cbb583" stroke-width="2" fill="none"/><circle cx="32" cy="36" r="10" fill="none" stroke="#cbb583" stroke-width="2"/></svg>
+          <span>фото появится здесь</span>
+        </div>
+        <div class="photo-caption">— из следующей охоты —</div>
+      </div>
+      <p style="margin-top:14px; font-family:'Kalam',cursive; font-size:15px; color:var(--ink-soft); text-align:center;">Место для будущих фотографий и вырезок.</p>
     </div>`
   },
   // 3 — оружие
@@ -478,6 +545,7 @@ const pages = [
         <li><strong>Огниво</strong> — последняя точка почти в каждой охоте. Огонь не оставляет второго шанса.</li>
       </ul>
       <div class="note"><strong>Тимофей:</strong> Проверяй сумку перед выездом. Дважды. Потом ещё раз.</div>
+      <div class="note"><strong>Запрет:</strong> элитры на территории охоты под запретом. Небо — не место для того, кто должен чуять землю под ногами.</div>
     </div>`,
     back: `<div class="content"><div class="paper-texture"></div>
       <p style="margin-top:40px;">Пустой лист. Дописать снаряжение по мере находок.</p>
@@ -638,6 +706,7 @@ function render(animating=false){
   pageEls.forEach((el, i) => {
     if(!animating){
       el.style.zIndex = i < current ? i : (total - i);
+      el.classList.toggle('show-back', i < current);
     }
     el.classList.toggle('flipped', i < current);
   });
@@ -653,6 +722,7 @@ function next(){
   const el = pageEls[current];
   el.style.zIndex = 500;
   el.classList.add('flipped');
+  setTimeout(() => el.classList.add('show-back'), 450);
   current++;
   setTimeout(() => render(), 900);
   render(true);
@@ -664,6 +734,7 @@ function prev(){
   const el = pageEls[current];
   el.style.zIndex = 500;
   el.classList.remove('flipped');
+  setTimeout(() => el.classList.remove('show-back'), 450);
   setTimeout(() => render(), 900);
   render(true);
 }
