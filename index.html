@@ -420,13 +420,58 @@
   .toc span.active{ background: var(--brass-light); box-shadow:0 0 6px var(--brass-light); }
 
   @media (max-width:720px){
-    .nav-btn.prev{ left:6px; }
-    .nav-btn.next{ right:6px; }
-    .nav-btn{ width:38px; height:38px; }
-    .content{ padding:26px 20px 36px; }
-    h2.page-title{ font-size:18px; }
-    p, li{ font-size:14.5px; }
-    .book-wrap{ width:94vw; height:80vh; }
+    .stage{
+      align-items:flex-start;
+      justify-content:flex-start;
+      padding-top:64px;
+      padding-bottom:20px;
+    }
+    .title-plate{ top:10px; }
+    .title-plate h1{ font-size:16px; }
+    .title-plate .eyebrow{ font-size:8.5px; letter-spacing:.22em; }
+
+    .book-wrap{
+      width:92vw;
+      height:calc(100vh - 96px);
+      margin:0 auto;
+    }
+    .spine{ left:-8px; width:18px; top:-10px; bottom:-10px; }
+    .cover-frame{ padding:10px 10px 10px 16px; }
+
+    .toc{ top:-24px; gap:4px; }
+    .toc span{ width:5px; height:5px; }
+
+    .content{ padding:24px 18px 60px; }
+    h2.page-title{ font-size:17px; padding-bottom:6px; }
+    .stamp{ font-size:9px; padding:2px 6px; }
+    .subhead{ font-size:14px; margin:14px 0 4px; }
+    p, li{ font-size:14px; line-height:1.5; }
+    .note{ font-size:13.5px; padding:7px 10px; }
+    .sigil{ width:150px; height:150px; right:-25px; bottom:-25px; }
+
+    .taped-photo{ width:150px; margin:26px auto 8px; }
+    .taped-photo.taped-small{ width:120px; margin:18px auto 4px; }
+
+    /* controls anchored inside the book on mobile, no off-canvas offsets */
+    .nav-btn{
+      top:auto;
+      bottom:12px;
+      transform:none;
+      width:40px; height:40px;
+      opacity:.92;
+    }
+    .nav-btn:hover{ transform:none; }
+    .nav-btn:active{ transform:scale(.94); }
+    .nav-btn.prev{ left:12px; }
+    .nav-btn.next{ right:12px; }
+
+    .page-counter{
+      bottom:20px;
+      background:rgba(20,12,6,.6);
+      padding:4px 10px;
+      border-radius:12px;
+      font-size:10.5px;
+    }
   }
 </style>
 </head>
@@ -763,6 +808,21 @@ document.addEventListener('keydown', (e) => {
   if(e.key === 'ArrowRight') next();
   if(e.key === 'ArrowLeft') prev();
 });
+
+// Swipe support for mobile
+const bookWrap = document.querySelector('.book-wrap');
+let touchStartX = 0, touchStartY = 0;
+bookWrap.addEventListener('touchstart', (e) => {
+  touchStartX = e.changedTouches[0].clientX;
+  touchStartY = e.changedTouches[0].clientY;
+}, { passive:true });
+bookWrap.addEventListener('touchend', (e) => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  if(Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.5){
+    if(dx < 0) next(); else prev();
+  }
+}, { passive:true });
 
 render();
 </script>
