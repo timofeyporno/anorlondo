@@ -43,7 +43,6 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    perspective:2400px;
   }
 
   .stage::before{
@@ -141,28 +140,23 @@
     position:relative;
     width:100%;
     height:100%;
-    transform-style:preserve-3d;
   }
 
   .page{
     position:absolute;
     inset:0;
     transform-origin:left center;
-    transform-style:preserve-3d;
-    transition: transform 0.9s cubic-bezier(.6,.05,.28,1);
+    transform: scaleX(1);
+    will-change: transform;
   }
-  .page.flipped{ transform:rotateY(-179.5deg); }
 
   .face{
     position:absolute; inset:0;
     background: var(--paper);
-    -webkit-backface-visibility:hidden;
-    backface-visibility:hidden;
     border-radius: 2px 8px 8px 2px;
     box-shadow: inset 0 0 60px rgba(120,90,40,.25), 2px 0 10px rgba(0,0,0,.25);
     overflow:hidden;
   }
-  .face.back{ transform: rotateY(180deg); }
 
   .page .face.front{ opacity:1; visibility:visible; }
   .page .face.back{ opacity:0; visibility:hidden; }
@@ -765,13 +759,18 @@ const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
 const counter = document.getElementById('pageCounter');
 
-function render(animating=false){
+let animating = false;
+
+function settle(el, showBack){
+  el.style.transition = 'none';
+  el.style.transform = 'scaleX(1)';
+  el.classList.toggle('show-back', showBack);
+}
+
+function render(){
   pageEls.forEach((el, i) => {
-    if(!animating){
-      el.style.zIndex = i < current ? i : (total - i);
-      el.classList.toggle('show-back', i < current);
-    }
-    el.classList.toggle('flipped', i < current);
+    el.style.zIndex = i < current ? i : (total - i);
+    settle(el, i < current);
   });
   dotEls.forEach((d, i) => d.classList.toggle('active', i === Math.min(current, total-1)));
   const shown = Math.min(current+1, total);
@@ -781,25 +780,33 @@ function render(animating=false){
 }
 
 function next(){
-  if(current >= total) return;
+  if(current >= total || animating) return;
+  animating = true;
   const el = pageEls[current];
   el.style.zIndex = 500;
-  el.classList.add('flipped');
-  setTimeout(() => el.classList.add('show-back'), 450);
+  el.style.transition = 'none';
+  el.style.transform = 'scaleX(1)';
+  void el.offsetWidth;
+  el.style.transition = 'transform .5s ease';
+  el.style.transform = 'scaleX(0)';
+  setTimeout(() => el.classList.add('show-back'), 260);
   current++;
-  setTimeout(() => render(), 900);
-  render(true);
+  setTimeout(() => { render(); animating = false; }, 520);
 }
 
 function prev(){
-  if(current === 0) return;
+  if(current === 0 || animating) return;
+  animating = true;
   current--;
   const el = pageEls[current];
   el.style.zIndex = 500;
-  el.classList.remove('flipped');
-  setTimeout(() => el.classList.remove('show-back'), 450);
-  setTimeout(() => render(), 900);
-  render(true);
+  el.classList.remove('show-back');
+  el.style.transition = 'none';
+  el.style.transform = 'scaleX(0)';
+  void el.offsetWidth;
+  el.style.transition = 'transform .5s ease';
+  el.style.transform = 'scaleX(1)';
+  setTimeout(() => { render(); animating = false; }, 520);
 }
 
 nextBtn.addEventListener('click', next);
